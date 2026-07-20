@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Idea Submission Form</title>
+  <meta name="description"
+    content="Sustainability Hackathon 2026 organized by IIT Bombay-Honeywell Centre of Excellence for Future Skills & Innovation." />
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Sustainability Hackathon 2026 | IHCFSI",
+        "url": "https://events-ihcfsi.org/"
+      }
+    </script>
+
+  <link rel="icon" type="image/png" href="asset/favicon/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="asset/favicon/favicon.svg" />
+  <link rel="shortcut icon" href="asset/favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="asset/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="asset/favicon/site.webmanifest" />
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="api_client.js" defer></script>
+    <link href="style.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+  <div class="form-container">
+    <div class="form-header">
+      <h1>Sustainibility Feedback form</h1>
+    </div>
+    <div class="alert" id="formMessage"></div>
+
+    <form id="ideaSubmissionForm">
+        <div class="section">
+          <h2>We have recieved your Idea</h2>
+          <div class="form-grid">
+
+             <div class="form-group full">
+             <label>
+                <span class="question-number">1.</span>
+              Select Department/Centre *
+              </label>
+              <select id="department" required>
+                <option value="" disabled selected>Loading departments…</option>
+              </select>
+                </div>
+
+              <div class="form-group full">
+   <label>
+                <span class="question-number">2.</span>
+              Select Name of PI *
+              </label>
+              <select id="piName" required disabled>
+                <option value="" disabled selected>Select a department first</option>
+              </select>
+                </div>
+
+              <div class="form-group full">
+ <label>
+                <span class="question-number">3.</span>
+               Title of the Project
+              </label>
+              <input type="text" id="projectTitle" readonly placeholder="Auto-filled once you select a PI">
+              <input type="hidden" id="piId">
+                </div>
+
+
+
+
+            <div class="form-group full">
+              <label>
+                <span class="question-number">4.</span>
+                Allocate the percentage contribution of your idea to each sustainability pillar.
+                <br><small>The total must equal exactly 100%.</small>
+              </label>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Environmental (%)</label>
+                  <div class="slider-row">
+                    <input type="range" id="envPct" min="0" max="100" step="1" value="0" required>
+                    <span class="slider-value" id="envPctValue">0%</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                <label>Human (%)</label>
+                  <div class="slider-row">
+                    <input type="range" id="humPct" min="0" max="100" step="1" value="0" required>
+                    <span class="slider-value" id="humPctValue">0%</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Cultural (%)</label>
+                  <div class="slider-row">
+                    <input type="range" id="culPct" min="0" max="100" step="1" value="0" required>
+                    <span class="slider-value" id="culPctValue">0%</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                <label>Social (%)</label>
+                  <div class="slider-row">
+                    <input type="range" id="socialPct" min="0" max="100" step="1" value="0" required>
+                    <span class="slider-value" id="socialPctValue">0%</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                <label>Economic (%)</label>
+                  <div class="slider-row">
+                    <input type="range" id="ecoPct" min="0" max="100" step="1" value="0" required>
+                    <span class="slider-value" id="ecoPctValue">0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <p id="totalDisplay" style="margin-top:10px;font-weight:700;color:#a82424;">Total: 0%</p>
+              <p id="feasibilityError" style="display:none;color:#a82424;font-weight:600;">
+                Total percentage must equal exactly 100%.
+              </p>
+
+              <div class="pillar-chart-wrap">
+                <div class="pillar-chart-bar" id="pillarChartBar" role="img" aria-label="Stacked bar chart of sustainability pillar allocation">
+                  <div class="pillar-chart-segment" id="segEnv" style="background:#0f6b4a;"><span class="seg-label"></span></div>
+                  <div class="pillar-chart-segment" id="segHum" style="background:#2a9d8f;"><span class="seg-label"></span></div>
+                  <div class="pillar-chart-segment" id="segCul" style="background:#e9c46a;"><span class="seg-label"></span></div>
+                  <div class="pillar-chart-segment" id="segSocial" style="background:#f4a261;"><span class="seg-label"></span></div>
+                  <div class="pillar-chart-segment" id="segEco" style="background:#6a4c93;"><span class="seg-label"></span></div>
+                </div>
+                <div class="pillar-chart-legend" id="pillarChartLegend">
+                  <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch" style="background:#0f6b4a;"></span>Environmental: <span id="legEnv">0%</span></span>
+                  <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch" style="background:#2a9d8f;"></span>Human: <span id="legHum">0%</span></span>
+                  <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch" style="background:#e9c46a;"></span>Cultural: <span id="legCul">0%</span></span>
+                  <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch" style="background:#f4a261;"></span>Social: <span id="legSocial">0%</span></span>
+                  <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch" style="background:#6a4c93;"></span>Economic: <span id="legEco">0%</span></span>
+                </div>
+              </div>
+
+              <!-- Stored as: env-{val},hum-{val},cul-{val},social-{val},eco-{val} -->
+            <input type="hidden" id="feasibility" value="env-0,hum-0,cul-0,social-0,eco-0">
+            </div>
+
+          </div>
+        </div>
+
+      <div class="step-navigation">
+        <button class="nav-btn prev-btn" type="button" id="clearBtn">Clear</button>
+        <span class="step-spacer"></span>
+        <button class="nav-btn next-btn" type="submit">Submit</button>
+  </div>
+  </form>
+  </div>
+</body>
+
+</html>

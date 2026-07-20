@@ -1,0 +1,309 @@
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f8f6;
+      color: #12332a;
+      padding: 40px 20px;
+    }
+
+    .form-container {
+      max-width: 1150px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 18px 45px rgba(15, 70, 50, 0.12);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .form-header h1 {
+      color: #0f6b4a;
+      font-size: 34px;
+      margin-bottom: 8px;
+    }
+
+    .section {
+      margin-bottom: 35px;
+      padding: 28px;
+      border: 1px solid #dce9e4;
+      border-radius: 16px;
+      background: #fbfdfc;
+    }
+
+    .section h2 {
+      font-size: 22px;
+      color: #083d2e;
+      margin-bottom: 22px;
+      border-left: 5px solid #0f6b4a;
+      padding-left: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #263f37;
+      line-height: 1.45;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d3e1dc;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #ffffff;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #0f6b4a;
+      box-shadow: 0 0 0 4px rgba(15, 107, 74, 0.12);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      width: auto;
+      padding: 0;
+      height: 6px;
+      border: none;
+      border-radius: 999px;
+      background: #dce9e4;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]:focus {
+      box-shadow: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #0f6b4a;
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 0 1px #0f6b4a, 0 4px 8px rgba(15, 70, 50, 0.25);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #0f6b4a;
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 0 1px #0f6b4a, 0 4px 8px rgba(15, 70, 50, 0.25);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-track {
+      background: #dce9e4;
+      height: 6px;
+      border-radius: 999px;
+      border: none;
+    }
+
+    .slider-value {
+      min-width: 52px;
+      text-align: center;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #e8f7ef;
+      color: #0f6b4a;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .question-number {
+      color: #0f6b4a;
+      font-weight: 800;
+    }
+
+    .alert {
+      display: none;
+      margin-bottom: 22px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .alert.success {
+      display: block;
+      background: #e8f7ef;
+      color: #0f6b4a;
+      border: 1px solid #b7e3ca;
+    }
+
+    .alert.error {
+      display: block;
+      background: #fff0f0;
+      color: #a82424;
+      border: 1px solid #f0b6b6;
+    }
+
+    .step-navigation {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: -10px;
+    }
+
+    .step-spacer {
+      flex: 1;
+    }
+
+    .nav-btn {
+      border: none;
+      padding: 14px 30px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .prev-btn {
+      background: #e8f0ed;
+      color: #12332a;
+    }
+
+    .next-btn {
+      background: #0f6b4a;
+      color: #ffffff;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(15, 70, 50, 0.15);
+    }
+
+    /* Sustainability pillar allocation — stacked bar chart */
+    .pillar-chart-wrap {
+      margin-top: 16px;
+    }
+
+    .pillar-chart-bar {
+      display: flex;
+      width: 100%;
+      height: 34px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #eef2f0;
+      border: 1px solid #d7e0dc;
+    }
+
+    .pillar-chart-segment {
+      height: 100%;
+      width: 0%;
+      min-width: 0;
+      transition: width 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .pillar-chart-segment .seg-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 4px;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+    }
+
+    .pillar-chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 10px;
+    }
+
+    .pillar-chart-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .pillar-chart-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .form-container {
+        padding: 25px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full {
+        grid-column: span 1;
+      }
+
+      .step-navigation {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .step-spacer {
+        display: none;
+      }
+
+      .nav-btn {
+        width: 100%;
+      }
+    }
