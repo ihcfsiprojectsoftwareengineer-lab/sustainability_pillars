@@ -8,67 +8,75 @@
     const form = document.getElementById("ideaSubmissionForm");
     const messageBox = document.getElementById("formMessage");
 
-    // ── Department → PI → Project directory, loaded from Supabase ──
+    // ── Secret key → Department / PI / Project directory, loaded from Supabase ──
     const departmentSelect = document.getElementById("department");
     const piSelect = document.getElementById("piName");
     const projectTitleInput = document.getElementById("projectTitle");
     const piIdInput = document.getElementById("piId");
+    const secretKeyInput = document.getElementById("secretKey");
+    const secretKeyStatus = document.getElementById("secretKeyStatus");
 
-    let piDirectory = []; // [{ id, department, pi_name, project_title }]
+    let piDirectory = []; // [{ id, department, pi_name, project_title, secret_key }]
 
     async function loadDirectory() {
       const { data, error } = await supabaseClient
         .from(SUPABASE_DIRECTORY_TABLE)
-        .select("id, department, pi_name, project_title")
+        .select("id, department, pi_name, project_title, secret_key")
         .order("department", { ascending: true })
         .order("pi_name", { ascending: true });
 
       if (error) {
-        departmentSelect.innerHTML = '<option value="" disabled selected>Failed to load list</option>';
+        console.error("Supabase directory load error:", error);
+        departmentSelect.value = "";
+        departmentSelect.placeholder = "Failed to load list";
         showMessage("error", "Could not load the Department/PI list. Please refresh the page.");
         return;
       }
 
       piDirectory = data || [];
-      populateDepartments();
+      resetDirectoryFields("Auto-filled once you enter a valid secret key");
     }
 
-    function populateDepartments() {
-      const departments = [...new Set(piDirectory.map(row => row.department))];
-
-      departmentSelect.innerHTML =
-        '<option value="" disabled selected>Select a department</option>' +
-        departments.map(d => `<option value="${d}">${d}</option>`).join("");
+    // Fills the (disabled/readonly) department, PI, and project fields from a matched row
+    function applyDirectoryRow(row) {
+      departmentSelect.value = row.department || "";
+      piSelect.value = row.pi_name || "";
+      projectTitleInput.value = row.project_title || "";
+      piIdInput.value = row.id;
     }
 
-    function populatePisForDepartment(department) {
-      const matches = piDirectory.filter(row => row.department === department);
-
-      piSelect.innerHTML =
-        '<option value="" disabled selected>Select a PI</option>' +
-        matches.map(row => `<option value="${row.id}">${row.pi_name}</option>`).join("");
-      piSelect.disabled = matches.length === 0;
-    }
-
-    function resetPiAndProject() {
-      piSelect.innerHTML = '<option value="" disabled selected>Select a department first</option>';
-      piSelect.disabled = true;
+    function resetDirectoryFields(placeholderText) {
+      departmentSelect.value = "";
+      departmentSelect.placeholder = placeholderText;
+      piSelect.value = "";
+      piSelect.placeholder = placeholderText;
       projectTitleInput.value = "";
       piIdInput.value = "";
     }
 
-    departmentSelect.addEventListener("change", () => {
-      resetPiAndProject();
-      if (departmentSelect.value) {
-        populatePisForDepartment(departmentSelect.value);
-      }
-    });
+    function lookupSecretKey() {
+      const key = secretKeyInput.value.trim();
 
-    piSelect.addEventListener("change", () => {
-      const selected = piDirectory.find(row => String(row.id) === piSelect.value);
-      projectTitleInput.value = selected ? selected.project_title : "";
-      piIdInput.value = selected ? selected.id : "";
-    });
+      if (!key) {
+        resetDirectoryFields("Enter your secret key first");
+        secretKeyStatus.textContent = "";
+        return;
+      }
+
+      const match = piDirectory.find(row => row.secret_key === key);
+
+      if (match) {
+        applyDirectoryRow(match);
+        secretKeyStatus.textContent = "✓ Secret key verified";
+        secretKeyStatus.style.color = "#0f6b4a";
+      } else {
+        resetDirectoryFields("Secret key not recognized");
+        secretKeyStatus.textContent = "✗ Secret key not recognized";
+        secretKeyStatus.style.color = "#a82424";
+      }
+    }
+
+    secretKeyInput.addEventListener("input", lookupSecretKey);
 
     loadDirectory();
 
@@ -192,8 +200,9 @@
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       form.reset();
-      departmentSelect.selectedIndex = 0;
-      resetPiAndProject();
+      secretKeyInput.value = "";
+      secretKeyStatus.textContent = "";
+      resetDirectoryFields("Enter your secret key first");
       syncSliderLabels();
       updateFeasibility();
       messageBox.style.display = "none";
@@ -204,8 +213,8 @@
       e.preventDefault();
 
       if (!piIdInput.value) {
-        showMessage("error", "Please select a Department and PI before submitting.");
-        departmentSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+        showMessage("error", "Please enter a valid Secret Key before submitting.");
+        secretKeyInput.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
 
@@ -226,7 +235,7 @@
       const payload = {
         pi_id: Number(piIdInput.value),
         department: departmentSelect.value,
-        pi_name: piSelect.options[piSelect.selectedIndex]?.text || "",
+        pi_name: piSelect.value || "",
         project_title: projectTitleInput.value,
         environmental_pct: env,
         human_pct: hum,
@@ -247,8 +256,9 @@
 
         const ideaCode = data?.id || "";
         form.reset();
-        departmentSelect.selectedIndex = 0;
-        resetPiAndProject();
+        secretKeyInput.value = "";
+        secretKeyStatus.textContent = "";
+        resetDirectoryFields("Enter your secret key first");
         syncSliderLabels();
         showMessage("success", "Feedback for Project submitted successfully!" + (ideaCode ? " Your Feedback code: " + ideaCode : ""));
         updateFeasibility();
@@ -257,7 +267,7 @@
         showMessage(
           "error",
           isDuplicate
-            ? "This PI has already submitted a Feedback for the Project. Only one submission per PI is allowed."
+            ? "You have already submitted a Feedback for the Project. Only one submission per PI is allowed."
             : (error.message || "Submission failed. Please try again.")
         );
       } finally {

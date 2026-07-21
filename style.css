@@ -161,6 +161,11 @@
       flex-shrink: 0;
     }
 
+    #secretKeyStatus {
+      display: block;
+      font-size: 13px;
+    }
+
     .question-number {
       color: #0f6b4a;
       font-weight: 800;
@@ -279,6 +284,80 @@
       height: 12px;
       border-radius: 3px;
       flex-shrink: 0;
+    }
+
+
+     /* ── Info tooltip ─────────────────────────────────────────────────────── */
+    .tooltip-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tooltip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #0f6b4a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .tooltip-box {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: auto;
+      position: absolute;
+
+      /* Desktop: right side */
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+
+      background: #083d2e;
+      color: #e8f7ef;
+      font-size: 13px;
+      line-height: 1.55;
+      padding: 10px 13px;
+      border-radius: 10px;
+      width: 270px;
+      max-width: min(270px, calc(100vw - 32px));
+
+      box-shadow: 0 8px 22px rgba(15, 70, 50, 0.22);
+      transition: opacity 0.18s ease;
+      z-index: 100;
+    }
+
+    .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 100%;
+      transform: translateY(-50%);
+
+      border: 6px solid transparent;
+      border-right-color: #083d2e;
+    }
+
+    .tooltip-wrap:hover .tooltip-box,
+    .tooltip-wrap:focus-within .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .tooltip-box a {
+      color: inherit;
+      text-decoration: underline;
     }
 
     @media (max-width: 768px) {
