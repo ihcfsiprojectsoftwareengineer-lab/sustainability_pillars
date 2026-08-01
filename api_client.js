@@ -8,7 +8,7 @@
     const form = document.getElementById("ideaSubmissionForm");
     const messageBox = document.getElementById("formMessage");
 
-    // ── Secret key → Department / PI / Project directory, loaded from Supabase ──
+    // ── Unique Code → Department / PI / Project directory, loaded from Supabase ──
     const departmentSelect = document.getElementById("department");
     const piSelect = document.getElementById("piName");
     const projectTitleInput = document.getElementById("projectTitle");
@@ -34,7 +34,7 @@
       }
 
       piDirectory = data || [];
-      resetDirectoryFields("Auto-filled once you enter a valid secret key");
+      resetDirectoryFields("Auto-filled once you enter a valid Unique Code");
     }
 
     // Fills the (disabled/readonly) department, PI, and project fields from a matched row
@@ -58,7 +58,7 @@
       const key = secretKeyInput.value.trim();
 
       if (!key) {
-        resetDirectoryFields("Enter your secret key first");
+        resetDirectoryFields("Enter your Unique Code first");
         secretKeyStatus.textContent = "";
         return;
       }
@@ -67,11 +67,11 @@
 
       if (match) {
         applyDirectoryRow(match);
-        secretKeyStatus.textContent = "✓ Secret key verified";
+        secretKeyStatus.textContent = "✓ Unique Code verified";
         secretKeyStatus.style.color = "#0f6b4a";
       } else {
-        resetDirectoryFields("Secret key not recognized");
-        secretKeyStatus.textContent = "✗ Secret key not recognized";
+        resetDirectoryFields("Unique Code not recognized");
+        secretKeyStatus.textContent = "✗ Unique Code not recognized";
         secretKeyStatus.style.color = "#a82424";
       }
     }
@@ -202,7 +202,7 @@
       form.reset();
       secretKeyInput.value = "";
       secretKeyStatus.textContent = "";
-      resetDirectoryFields("Enter your secret key first");
+      resetDirectoryFields("Enter your Unique Code first");
       syncSliderLabels();
       updateFeasibility();
       messageBox.style.display = "none";
@@ -213,7 +213,7 @@
       e.preventDefault();
 
       if (!piIdInput.value) {
-        showMessage("error", "Please enter a valid Secret Key before submitting.");
+        showMessage("error", "Please enter a valid Unique Code before submitting.");
         secretKeyInput.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
@@ -258,7 +258,7 @@
         form.reset();
         secretKeyInput.value = "";
         secretKeyStatus.textContent = "";
-        resetDirectoryFields("Enter your secret key first");
+        resetDirectoryFields("Enter your Unique Code first");
         syncSliderLabels();
         showMessage("success", "Feedback for Project submitted successfully!" + (ideaCode ? " Your Feedback code: " + ideaCode : ""));
         updateFeasibility();
