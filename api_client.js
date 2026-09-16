@@ -83,8 +83,6 @@
     // ── Pillar allocation: shared config for inputs, chart segments & legend ──
     const PILLARS = [
       { id: "envPct",    key: "env",    seg: "segEnv",    leg: "legEnv",    label: "Environmental" },
-      { id: "humPct",    key: "hum",    seg: "segHum",    leg: "legHum",    label: "Human" },
-      { id: "culPct",    key: "cul",    seg: "segCul",    leg: "legCul",    label: "Cultural" },
       { id: "socialPct", key: "social", seg: "segSocial", leg: "legSocial", label: "Social" },
       { id: "ecoPct",    key: "eco",    seg: "segEco",    leg: "legEco",    label: "Economic" },
     ];
@@ -157,8 +155,8 @@
     }
 
     function updateFeasibility() {
-      const [env, hum, cul, social, eco] = getPillarValues();
-      const total = env + hum + cul + social + eco;
+      const [env, social, eco] = getPillarValues();
+      const total = env + social + eco;
 
       const display = document.getElementById("totalDisplay");
       const error = document.getElementById("feasibilityError");
@@ -168,9 +166,9 @@
       error.style.display = (total > 0 && total !== 100) ? "block" : "none";
 
       document.getElementById("feasibility").value =
-        `env-${env},hum-${hum},cul-${cul},social-${social},eco-${eco}`;
+        `env-${env},social-${social},eco-${eco}`;
 
-      updatePillarChart([env, hum, cul, social, eco], total);
+      updatePillarChart([env, social, eco], total);
     }
 
     pillarIds.forEach(id => {
@@ -230,7 +228,7 @@
         submitButton.textContent = "Submitting...";
       }
 
-      const [env, hum, cul, social, eco] = getPillarValues();
+      const [env, social, eco] = getPillarValues();
 
       const payload = {
         pi_id: Number(piIdInput.value),
@@ -238,8 +236,6 @@
         pi_name: piSelect.value || "",
         project_title: projectTitleInput.value,
         environmental_pct: env,
-        human_pct: hum,
-        cultural_pct: cul,
         social_pct: social,
         economic_pct: eco,
         feasibility: document.getElementById("feasibility").value,

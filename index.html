@@ -114,45 +114,6 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>Human (%)
- <span class="tooltip-wrap">
-
-                    <span class="tooltip-icon" tabindex="0" role="tooltip" aria-label="What to enter here">i</span>
-                    <span class="tooltip-box">
-                      Enter the <strong>complete official name</strong> of your institution exactly as it appears on
-                      your
-                      identity card or official documents.<br><br>
-                      <em>e.g. "Indian Institute of Technology Bombay" not "IIT Bombay"</em>
-                    </span>
-                  </span>
-
-
-                </label>
-                <div class="slider-row">
-                  <input type="range" id="humPct" min="0" max="100" step="1" value="0" required>
-                  <span class="slider-value" id="humPctValue">0%</span>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Cultural (%)
- <span class="tooltip-wrap">
-
-                    <span class="tooltip-icon" tabindex="0" role="tooltip" aria-label="What to enter here">i</span>
-                    <span class="tooltip-box">
-                      Enter the <strong>complete official name</strong> of your institution exactly as it appears on
-                      your
-                      identity card or official documents.<br><br>
-                      <em>e.g. "Indian Institute of Technology Bombay" not "IIT Bombay"</em>
-                    </span>
-                  </span>
-
-                </label>
-                <div class="slider-row">
-                  <input type="range" id="culPct" min="0" max="100" step="1" value="0" required>
-                  <span class="slider-value" id="culPctValue">0%</span>
-                </div>
-              </div>
-              <div class="form-group">
                 <label>Social (%)
                    <span class="tooltip-wrap">
 
@@ -200,10 +161,6 @@
                 aria-label="Stacked bar chart of sustainability pillar allocation">
                 <div class="pillar-chart-segment" id="segEnv" style="background:#0f6b4a;"><span
                     class="seg-label"></span></div>
-                <div class="pillar-chart-segment" id="segHum" style="background:#2a9d8f;"><span
-                    class="seg-label"></span></div>
-                <div class="pillar-chart-segment" id="segCul" style="background:#e9c46a;"><span
-                    class="seg-label"></span></div>
                 <div class="pillar-chart-segment" id="segSocial" style="background:#f4a261;"><span
                     class="seg-label"></span></div>
                 <div class="pillar-chart-segment" id="segEco" style="background:#6a4c93;"><span
@@ -213,18 +170,14 @@
                 <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch"
                     style="background:#0f6b4a;"></span>Environmental: <span id="legEnv">0%</span></span>
                 <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch"
-                    style="background:#2a9d8f;"></span>Human: <span id="legHum">0%</span></span>
-                <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch"
-                    style="background:#e9c46a;"></span>Cultural: <span id="legCul">0%</span></span>
-                <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch"
                     style="background:#f4a261;"></span>Social: <span id="legSocial">0%</span></span>
                 <span class="pillar-chart-legend-item"><span class="pillar-chart-swatch"
                     style="background:#6a4c93;"></span>Economic: <span id="legEco">0%</span></span>
               </div>
             </div>
 
-            <!-- Stored as: env-{val},hum-{val},cul-{val},social-{val},eco-{val} -->
-            <input type="hidden" id="feasibility" value="env-0,hum-0,cul-0,social-0,eco-0">
+            <!-- Stored as: env-{val},social-{val},eco-{val} -->
+            <input type="hidden" id="feasibility" value="env-0,social-0,eco-0">
           </div>
 
         </div>
