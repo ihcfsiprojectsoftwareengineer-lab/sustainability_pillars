@@ -229,6 +229,23 @@
       box-shadow: 0 8px 18px rgba(15, 70, 50, 0.15);
     }
 
+textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #d3e1dc;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #ffffff;
+  outline: none;
+  resize: vertical;
+}
+
+textarea:focus {
+  border-color: #0f6b4a;
+  box-shadow: 0 0 0 4px rgba(15, 107, 74, 0.12);
+}
+
     /* Sustainability pillar allocation — stacked bar chart */
     .pillar-chart-wrap {
       margin-top: 16px;

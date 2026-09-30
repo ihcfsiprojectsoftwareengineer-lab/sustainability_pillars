@@ -8,7 +8,7 @@
     const form = document.getElementById("ideaSubmissionForm");
     const messageBox = document.getElementById("formMessage");
 
-    // ── Unique Code → Department / PI / Project directory, loaded from Supabase ──
+// ── Unique Code → Department / PI / Project, verified server-side via RPC ──
     const departmentSelect = document.getElementById("department");
     const piSelect = document.getElementById("piName");
     const projectTitleInput = document.getElementById("projectTitle");
@@ -16,28 +16,36 @@
     const secretKeyInput = document.getElementById("secretKey");
     const secretKeyStatus = document.getElementById("secretKeyStatus");
 
-    let piDirectory = []; // [{ id, department, pi_name, project_title, secret_key }]
+    // ── Optional description with 250-word limit ──
+const MAX_DESC_WORDS = 250;
+const proposalDescInput = document.getElementById("proposalDesc");
+const proposalDescCount = document.getElementById("proposalDescCount");
 
-    async function loadDirectory() {
-      const { data, error } = await supabaseClient
-        .from(SUPABASE_DIRECTORY_TABLE)
-        .select("id, department, pi_name, project_title, secret_key")
-        .order("department", { ascending: true })
-        .order("pi_name", { ascending: true });
+function countWords(text) {
+  const trimmed = text.trim();
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
 
-      if (error) {
-        console.error("Supabase directory load error:", error);
-        departmentSelect.value = "";
-        departmentSelect.placeholder = "Failed to load list";
-        showMessage("error", "Could not load the Department/PI list. Please refresh the page.");
-        return;
-      }
+function updateDescCount() {
+  let words = countWords(proposalDescInput.value);
 
-      piDirectory = data || [];
-      resetDirectoryFields("Auto-filled once you enter a valid Unique Code");
-    }
+  // Also catches pasted text: cut down to the first 250 words
+  if (words > MAX_DESC_WORDS) {
+    proposalDescInput.value = proposalDescInput.value
+      .trim()
+      .split(/\s+/)
+      .slice(0, MAX_DESC_WORDS)
+      .join(" ");
+    words = MAX_DESC_WORDS;
+  }
 
-    // Fills the (disabled/readonly) department, PI, and project fields from a matched row
+  proposalDescCount.textContent = `${words} / ${MAX_DESC_WORDS} words`;
+  proposalDescCount.style.color = words >= MAX_DESC_WORDS ? "#a82424" : "";
+}
+
+proposalDescInput.addEventListener("input", updateDescCount);
+
+// Fills the (readonly) department, PI, and project fields from a matched row
     function applyDirectoryRow(row) {
       departmentSelect.value = row.department || "";
       piSelect.value = row.pi_name || "";
@@ -54,8 +62,19 @@
       piIdInput.value = "";
     }
 
+let lookupTimer = null;
+let lookupSeq = 0;
+
+// Cancels any pending or in-flight lookup so a late response can't refill the form
+function cancelLookup() {
+  clearTimeout(lookupTimer);
+  lookupSeq++;
+}
+
     function lookupSecretKey() {
+  cancelLookup();
       const key = secretKeyInput.value.trim();
+  const seq = lookupSeq;
 
       if (!key) {
         resetDirectoryFields("Enter your Unique Code first");
@@ -63,7 +82,25 @@
         return;
       }
 
-      const match = piDirectory.find(row => row.secret_key === key);
+  // Clear immediately so a previously verified PI can't be submitted while typing
+  resetDirectoryFields("Checking Unique Code...");
+  secretKeyStatus.textContent = "Checking...";
+  secretKeyStatus.style.color = "";
+
+  lookupTimer = setTimeout(async () => {
+    const { data, error } = await supabaseClient.rpc("lookup_pi_by_code", { p_code: key });
+
+    if (seq !== lookupSeq) return; // a newer keystroke or a Clear superseded this lookup
+
+    if (error) {
+      console.error("Unique Code lookup error:", error);
+      resetDirectoryFields("Could not verify Unique Code");
+      secretKeyStatus.textContent = "Could not verify the code. Please try again.";
+      secretKeyStatus.style.color = "#a82424";
+      return;
+    }
+
+    const match = data && data[0];
 
       if (match) {
         applyDirectoryRow(match);
@@ -74,11 +111,12 @@
         secretKeyStatus.textContent = "✗ Unique Code not recognized";
         secretKeyStatus.style.color = "#a82424";
       }
+  }, 400);
     }
 
     secretKeyInput.addEventListener("input", lookupSecretKey);
 
-    loadDirectory();
+resetDirectoryFields("Auto-filled once you enter a valid Unique Code");
 
     // ── Pillar allocation: shared config for inputs, chart segments & legend ──
     const PILLARS = [
@@ -137,12 +175,12 @@
       }
     }
 
-
     // ── Prevents total from exceeding 100%: clamps only the slider being
-    // dragged to whatever budget the other four have left. `max` stays at
+// dragged to whatever budget the other two have left. `max` stays at
     // 100 on every slider so untouched thumbs never visually shift ──
     function restrictSlider(activeId) {
       if (!activeId) return;
+
         const otherSum = PILLARS
         .filter(p => p.id !== activeId)
         .reduce((sum, p) => sum + (Number(document.getElementById(p.id).value) || 0), 0);
@@ -179,7 +217,6 @@
       });
     });
 
-
     updateFeasibility();
 
     function showMessage(type, text) {
@@ -197,16 +234,20 @@
     }
 
     document.getElementById("clearBtn").addEventListener("click", () => {
+  cancelLookup();
       form.reset();
+      updateDescCount();
       secretKeyInput.value = "";
       secretKeyStatus.textContent = "";
       resetDirectoryFields("Enter your Unique Code first");
       syncSliderLabels();
       updateFeasibility();
-      messageBox.style.display = "none";
+  // Let the CSS (.alert { display: none }) hide it, so later messages can still show
+  messageBox.className = "alert";
+  messageBox.textContent = "";
     });
 
-    // ── Final submit: validates, then inserts the idea directly into Supabase ──
+// ── Final submit: validates, then inserts the feedback directly into Supabase ──
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -217,12 +258,19 @@
       }
 
       if (!validateFeasibility()) {
-        showMessage("error", "The five sustainability percentages must add up to exactly 100%.");
+    showMessage("error", "The three sustainability percentages must add up to exactly 100%.");
         document.getElementById("feasibilityError").scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
 
+      if (countWords(proposalDescInput.value) > MAX_DESC_WORDS) {
+  showMessage("error", `The description must be ${MAX_DESC_WORDS} words or fewer.`);
+  proposalDescInput.scrollIntoView({ behavior: "smooth", block: "center" });
+  return;
+}
+
       const submitButton = form.querySelector("button[type='submit']");
+  const submitLabel = submitButton ? submitButton.textContent : "";
       if (submitButton) {
         submitButton.disabled = true;
         submitButton.textContent = "Submitting...";
@@ -230,16 +278,17 @@
 
       const [env, social, eco] = getPillarValues();
 
-      const payload = {
-        pi_id: Number(piIdInput.value),
-        department: departmentSelect.value,
-        pi_name: piSelect.value || "",
-        project_title: projectTitleInput.value,
-        environmental_pct: env,
-        social_pct: social,
-        economic_pct: eco,
-        feasibility: document.getElementById("feasibility").value,
-      };
+const payload = {
+  pi_id: Number(piIdInput.value),
+  department: departmentSelect.value,
+  pi_name: piSelect.value || "",
+  project_title: projectTitleInput.value,
+  environmental_pct: env,
+  social_pct: social,
+  economic_pct: eco,
+  feasibility: document.getElementById("feasibility").value,
+  proposal_desc: proposalDescInput.value.trim() || null,
+};
 
       try {
         const { data, error } = await supabaseClient
@@ -252,6 +301,8 @@
 
         const ideaCode = data?.id || "";
         form.reset();
+    cancelLookup();
+        updateDescCount();
         secretKeyInput.value = "";
         secretKeyStatus.textContent = "";
         resetDirectoryFields("Enter your Unique Code first");
@@ -269,7 +320,7 @@
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.textContent = "Submit Feedback";
+      submitButton.textContent = submitLabel; // restores whatever the HTML button said
         }
       }
     });
