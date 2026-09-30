@@ -263,6 +263,14 @@ resetDirectoryFields("Auto-filled once you enter a valid Unique Code");
         return;
       }
 
+      if (countWords(proposalDescInput.value) === 0) {
+  showMessage("error", "Please describe how your research project aligns with the sustainability pillars.");
+  proposalDescInput.scrollIntoView({ behavior: "smooth", block: "center" });
+  proposalDescInput.focus();
+  return;
+}
+
+
       if (countWords(proposalDescInput.value) > MAX_DESC_WORDS) {
   showMessage("error", `The description must be ${MAX_DESC_WORDS} words or fewer.`);
   proposalDescInput.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -287,7 +295,7 @@ const payload = {
   social_pct: social,
   economic_pct: eco,
   feasibility: document.getElementById("feasibility").value,
-  proposal_desc: proposalDescInput.value.trim() || null,
+  proposal_desc: proposalDescInput.value.trim() ,
 };
 
       try {
